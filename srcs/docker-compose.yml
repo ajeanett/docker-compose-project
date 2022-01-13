@@ -1,0 +1,83 @@
+# Файл docker-compose должен начинаться с тега версии.
+version: "3.9"
+
+# Следует учитывать, что docker-composes работает с сервисами.
+# 1 сервис = 1 контейнер.
+# Сервисом может быть клиент, сервер, сервер баз данных...
+# Раздел, в котором будут описаны сервисы, начинается с 'services'.
+
+services:
+  nginx:
+    build: ./requirements/nginx/
+    image: nginx:my
+    container_name: nginx
+    volumes:
+      - wp:/var/www/wordpress
+    depends_on:
+      - wordpress
+    ports:
+      - 443:443
+      - 80:80
+    networks:
+      - ajeanett
+    env_file:
+        - ./.env
+    tty: true
+    restart: on-failure
+  wordpress:
+    build: ./requirements/wordpress/
+    image: wordpress:my
+    container_name: wordpress
+    volumes:
+      - wp:/var/www/wordpress
+    depends_on:
+      - mariadb
+    networks:
+      - ajeanett
+    env_file:
+        - ./.env
+    tty: true
+    restart: on-failure
+  mariadb:
+    build: ./requirements/mariadb/
+    image: mariadb:my
+    container_name: mariadb
+    volumes:
+       - db:/var/lib/mysql
+    networks:
+      - ajeanett
+    env_file:
+        - ./.env
+    tty: true
+    restart: on-failure
+  redis:
+    build: ./requirements/redis
+    image: redis:my
+    container_name: redis
+    tty: true
+    networks:
+      - ajeanett
+    restart: on-failure
+    
+        
+volumes:
+  db:
+    name: db
+    driver: local
+    driver_opts:
+      type: none
+      device: /Users/ajeanett/Documents/inception/test/srcs/data/db
+      o: bind
+  wp:
+    name: wp
+    driver: local
+    driver_opts:
+      type: none
+      device: /Users/ajeanett/Documents/inception/test/srcs/data/wordpress
+      o: bind
+      
+networks:
+  ajeanett:
+    driver: bridge
+
+    
