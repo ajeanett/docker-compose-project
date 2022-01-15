@@ -3,8 +3,10 @@ all: prepare_dir build
 prepare_dir: 
 		mkdir -p ./srcs/data/db
 		mkdir -p ./srcs/data/wordpress
+		mkdir -p ./srcs/data/wordpress/adminer
 		chmod -R 777 ./srcs/data/
 		cp -pfr ./srcs/requirements/tools/www ./srcs/data/wordpress/
+		cp -pfr ./srcs/requirements/tools/html ./srcs/data/wordpress/resume
 
 remove_dir: 
 		rm -r ./srcs/data
@@ -35,6 +37,7 @@ clean:
 	docker system prune -a --volumes -f
 	docker volume rm db
 	docker volume rm wp
+	docker volume rm adminer
 
 clean_data:
 	rm -rf ./srcs/data

@@ -13,6 +13,7 @@ services:
     container_name: nginx
     volumes:
       - wp:/var/www/wordpress
+      # - adminer:/var/www/adminer
     depends_on:
       - wordpress
     ports:
@@ -58,8 +59,32 @@ services:
     networks:
       - ajeanett
     restart: on-failure
-    
-        
+  adminer:
+    build: ./requirements/adminer
+    image: adminer:my
+    container_name: adminer
+    tty: true
+    env_file:
+      - .env
+    networks:
+      - ajeanett
+    restart: on-failure
+    volumes:
+      - adminer:/var/www/adminer
+  ftp:
+    build: ./requirements/ftp
+    image: ftp:my
+    container_name: ftp
+    tty: true
+    ports:
+      - "20:20"
+      - "21:21"
+      - "10000-10500:10000-10500"
+    networks:
+      - ajeanett
+    volumes:
+      - wp:/var/www/wordpress
+    restart: on-failure
 volumes:
   db:
     name: db
@@ -74,6 +99,13 @@ volumes:
     driver_opts:
       type: none
       device: /Users/ajeanett/Documents/inception/test/srcs/data/wordpress
+      o: bind
+  adminer:
+    name: adminer
+    driver: local
+    driver_opts:
+      type: none
+      device: /Users/ajeanett/Documents/inception/test/srcs/data/wordpress/adminer
       o: bind
       
 networks:
